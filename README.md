@@ -26,7 +26,7 @@ If you set a DVD drive to region code 2 (RC2), you'll only be able to play regio
 
 So always be very very careful changing the region code, it could be your last try before you're forced to buy a new drive (or play foreign DVDs forever).
 
-### nstallation
+### Installation
 
 Just unpack the package then call "make". After compiling, you'll find the binary "regionset" in the directory which you should copy to /usr/sbin (as root, of course)
 
