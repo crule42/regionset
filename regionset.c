@@ -28,7 +28,7 @@
 #include "dvd_udf.h"
 
 #define DEFAULTDEVICE "/dev/dvd"
-#define VERSION "0.2"
+#define VERSION "0.3"
 
 int main (int argc, char* argv[]) {
   int i;
@@ -39,6 +39,18 @@ int main (int argc, char* argv[]) {
   int rpc_scheme;
   char ch[3];
 
+  char *regionCodes[] = 
+    {
+    "North America (USA and Canada)",                                                                         /*Region 1*/
+    "Japan, Europe, South Africa, the Middle East (including Egypt) and Greenland",                           /*Region 2*/
+    "Southeast Asia, and East Asia (including Hong Kong).",                                                   /*Region 3*/
+    "Australia, New Zealand, the Pacific Islands, Central America, Mexico, South America, and the Caribbean", /*Region 4*/
+    "Eastern Europe, Russia, the Indian Subcontinent, Africa, North Korea, and Mongolia",                     /*Region 5*/
+    "China",                                                                                                  /*Region 6*/ 
+    "Reserved for unspecified special use",                                                                   /*Region 7*/
+    "Special international venues for air and oceanic travel"                                                 /*Region 8*/
+    };
+
   // setbuf(stdin,NULL);
 
   if (argc>2) {
@@ -48,25 +60,33 @@ int main (int argc, char* argv[]) {
     if(argc==2 && argv[1][0]=='-' && argv[1][1]=='h' && argv[1][2]=='\0') {
       printf("regionset version %s -- reads/sets region code on DVD drives\n", VERSION);
       printf("Usage: %s [device]\n", argv[0]);
-      printf("       where default device is /dev/dvd\n");
+      printf("       where default device is %s\n", DEFAULTDEVICE);
       return -1;
     }
-    if(UDFOpenDisc(((argc==2)?argv[1]:DEFAULTDEVICE)) < 0) {
-      fprintf(stderr, "ERROR: Could not open drive \"%s\".\n", ((argc>=1)?argv[1]:DEFAULTDEVICE));
+
+    char *Device = DEFAULTDEVICE;
+    if (argc == 2)
+    {
+        Device = argv[1];
+    }
+
+    if(UDFOpenDisc(Device) < 0) 
+    {
+      fprintf(stderr, "ERROR: Could not open drive \"%s\".\n", Device);
       fprintf(stderr, "Ensure that there is a (readable) CD or DVD in the drive.\n");
       return -1;
     }
     if (UDFRPCGet(&rpc_status,&vendor_resets,&user_resets,&region_mask,&rpc_scheme)) {
       printf("ERROR: Could not retrieve region code settings from drive.\n");
     } else {
-      printf("Current drive parameters for %s:\n", ((argc==2)?argv[1]:DEFAULTDEVICE));
+      printf("Current drive parameters for %s:\n", Device);
       printf("  RPC Type: %s\n",((rpc_scheme==0)?"Phase I (Software)":((rpc_scheme==1)?"Phase II (Hardware)":"unknown")));
       printf("  RPC Status: %s",((rpc_status==0)?"no region code set":((rpc_status==1)?"active region code":((rpc_status==2)?"active region code, last change":"active region code, permanent"))));
       printf(" (bitmask=0x%02X)\n", region_mask);
       if(rpc_status>0) {
         printf("  Drive plays discs from this region(s):");
         for (i=0; i<8; i++) {
-          if (!(region_mask&(1<<i))) printf(" %d",i+1);
+          if (!(region_mask&(1<<i))) printf("\n    %d: %s",i+1, regionCodes[i]);
         }
         printf("\n");
       }
