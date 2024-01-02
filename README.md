@@ -32,7 +32,7 @@ Just unpack the package then call "make". After compiling, you'll find the binar
 
 ### How to use the programm
 
-You need write access to the DVD drive, either by group or by being root. The more, there absolutely definitively and in any case *must* be a readable Data CD or Data/Video DVD in the drive -- it does not matter if it's your favourite Windows CD, a video or a DVD with your last backup.
+You need write access to the DVD drive, either by group or by being root. There usually must be a readable Data CD or Data/Video DVD in the drive -- it does not matter if it's your favorite Windows CD, a video or a DVD with your last backup.
 
 By default, regionset will use /dev/dvd to find your DVD drive. You can adjust this by entering the path to the DVD device as first command line parameter (please absolute path!).
 
